@@ -1,7 +1,7 @@
 module Lib where
 
 import Data.List (sortBy)
-import Data.Ord (comparing)
+import Data.Ord (Down(..), comparing)
 import qualified Data.MultiSet as MS
 
 type Alphabet = [Char]
@@ -58,7 +58,7 @@ indexOf c (x : xs) = if x == c then 0 else 1 + indexOf c xs
 --
 
 alphabetRot :: Alphabet -> Int -> Char -> Char
-alphabetRot alphabet n c = 
+alphabetRot alphabet n c =
     alphabet Lib.!! ((indexOf c alphabet + n) `mod` listLength alphabet)
 
 upperRot :: Int -> Char -> Char
@@ -88,8 +88,8 @@ digitRot :: Int -> Char -> Char
 digitRot n c = alphabetRot digits n c
 
 rotAlphaDigit :: Char -> Char
-rotAlphaDigit c 
-    | isLower c = lowerRot 13 c 
+rotAlphaDigit c
+    | isLower c = lowerRot 13 c
     | isUpper c = upperRot 13 c
     | isDigit c = digitRot 5 c
     | otherwise = c
@@ -104,7 +104,7 @@ count :: String -> [(Char, Int)]
 count str =
     let
         counts = MS.fromList str
-    in sortBy (flip (comparing snd)) $ MS.toAscOccurList counts
+    in sortBy (comparing (Data.Ord.Down . snd)) $ MS.toAscOccurList counts
 
 
 
