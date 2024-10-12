@@ -12,6 +12,11 @@ parseArguments :: [String] -> Maybe FilePath
 parseArguments [filepath] = Just filepath
 parseArguments _ = Nothing
 
+readLines :: FilePath -> IO [String]
+readLines filepath = do
+  contents <- readFile filepath
+  return (lines contents)
+
 main :: IO ()
 main = do
   cliArgs <- getArgs
@@ -20,4 +25,6 @@ main = do
     (printHelpText "Missing filename")
     (\filePath -> putStrLn filePath)
     mFilePath
+  
+  
 
