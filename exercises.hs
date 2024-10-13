@@ -36,3 +36,30 @@ myUnwords (x : xs)
     | null xs = x
     | otherwise = x <> " " <> myUnwords xs
 
+-- Implement zipWith and use it to define zip
+
+zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith' _ [] _ = []
+zipWith' _ _ [] = []
+zipWith' f (x : xs) (y : ys) = f x y : zipWith' f xs ys
+
+zip' :: [a] -> [b] -> [(a,b)]
+zip' = zipWith' (,)
+
+-- Implement mapM and mapM_
+
+mapM' :: (a -> IO b) -> [a] -> IO [b]
+mapM' f as = 
+    let go acc ys = do
+            case ys of
+                [] -> return acc
+                (x : xs) -> do
+                    b <- f x
+                    go (b : acc) xs
+    in go [] as
+
+mapM_' :: (a -> IO b) -> [a] -> IO ()
+mapM_' _ [] = return ()
+mapM_' f (x : xs) = do
+    f x
+    mapM_' f xs
