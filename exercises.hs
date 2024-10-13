@@ -1,7 +1,10 @@
 -- Exercises for Learn Haskell By Example
 -- These are exercises that aren't part of the projects
 
--- Chapter 2
+--
+-- Chapter 4
+--
+
 -- Implement lines, unlines, words, unwords
 
 -- unlines and unwords behave identically, except for the different separator, so write a 
