@@ -19,6 +19,8 @@ common warnings
 library
     import:           warnings
     exposed-modules:  Lib
+                      Data.AssocMap
+                      Graph
     -- other-modules:
     -- other-extensions:
     build-depends:    base ^>=4.17.2.1
