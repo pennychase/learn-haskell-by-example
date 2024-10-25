@@ -63,3 +63,26 @@ mapM_' _ [] = return ()
 mapM_' f (x : xs) = do
     f x
     mapM_' f xs
+
+--
+-- Chapter 5
+--
+
+-- Implement member with lookup
+member :: Eq a => a -> [(a,b)] -> Bool
+member x xs =
+    case lookup x xs of
+        Nothing -> False
+        Just _ -> True
+
+-- Implement alter with maybe
+
+alter :: Eq k => (Maybe v -> Maybe v) -> k -> [(k, v)]-> [(k, v)]
+alter f key [] = maybe [] (\value -> [(key, value)]) (f Nothing)
+        
+alter f key ((key', value') : xs)
+    | key == key' = maybe xs (\value -> (key, value) : xs) (f (Just value'))
+    | otherwise = (key', value') : alter f key xs
+
+
+
