@@ -1,31 +1,29 @@
 module Graph where
 
-type DiGraph a = [(a, [a])]
+import qualified Data.AssocMap as M
+import qualified Data.List as L
 
-member :: Eq a => a -> [(a, b)] -> Bool
-member _ [] = False
-member x ((x', _) : xs)
-    | x == x' = True
-    | otherwise = member x xs
-
-alter :: Eq k => (Maybe v -> Maybe v) -> k -> [(k, v)] -> [(k, v)]
-alter f key [] =
-    case f Nothing of
-        Nothing -> []
-        Just value -> [(key, value)]
-alter f key ((key', value') : xs)
-    | key == key' = 
-        case f (Just value') of
-            Nothing -> xs
-            Just value -> (key, value) : xs
-    | otherwise = (key', value') : alter f key xs
+type DiGraph a = M.AssocMap a [a]
 
 
+empty :: DiGraph a
+empty = M.empty
 
-hasNode :: Eq a => DiGraph a -> a -> Bool
-hasNode = flip member
+addEdge :: (Eq a) => (a, a) -> DiGraph a -> DiGraph a
+addEdge (node, child) = M.alter insertEdge node
+    where
+        insertEdge Nothing = Just [child]
+        insertEdge (Just nodes) = Just (L.nub (child : nodes))
 
-addNode :: Eq a => DiGraph a -> a -> DiGraph a
-addNode graph node
-    | graph `hasNode` node = graph
-    | otherwise = (node, []) : graph
+addEdges :: (Eq a) => [(a, a)] -> DiGraph a -> DiGraph a
+addEdges [] graph = graph
+addEdges (edge : edges) graph = addEdge edge (addEdges edges graph)
+
+buildDiGraph :: (Eq a) => [(a, [a])] -> DiGraph a
+buildDiGraph nodes = go nodes M.empty
+    where
+        go [] graph = graph
+        go ((key, value) : xs) graph = M.insert key value (go xs graph)
+
+children :: (Eq a) => a -> DiGraph a -> [a]
+children = M.findWithDefault []
