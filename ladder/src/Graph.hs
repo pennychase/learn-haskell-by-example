@@ -16,14 +16,10 @@ addEdge (node, child) = M.alter insertEdge node
         insertEdge (Just nodes) = Just (L.nub (child : nodes))
 
 addEdges :: (Eq a) => [(a, a)] -> DiGraph a -> DiGraph a
-addEdges [] graph = graph
-addEdges (edge : edges) graph = addEdge edge (addEdges edges graph)
+addEdges edges graph = foldr addEdge graph edges
 
 buildDiGraph :: (Eq a) => [(a, [a])] -> DiGraph a
-buildDiGraph nodes = go nodes M.empty
-    where
-        go [] graph = graph
-        go ((key, value) : xs) graph = M.insert key value (go xs graph)
+buildDiGraph = foldr (\(k, v) xs -> M.insert k v xs) M.empty
 
 children :: (Eq a) => a -> DiGraph a -> [a]
 children = M.findWithDefault []
