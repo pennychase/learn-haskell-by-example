@@ -85,4 +85,10 @@ alter f key ((key', value') : xs)
     | otherwise = (key', value') : alter f key xs
 
 
+-- High order function to implment addEdges and buildDiGraph, i.e., write foldr
+
+myFoldr :: (a -> b -> b) -> b -> [a] -> b
+myFoldr f x [] = x
+myFoldr f x (y : ys) = f y (myFoldr f x ys)
+
 
