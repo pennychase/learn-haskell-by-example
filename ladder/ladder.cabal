@@ -21,6 +21,7 @@ library
     exposed-modules:  Lib
                       Data.AssocMap
                       Graph
+                      Ladder
                       PermutationMap
     -- other-modules:
     -- other-extensions:
