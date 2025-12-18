@@ -24,5 +24,11 @@ isMisc :: Char -> Bool
 isMisc char = char `notElem` lowerAlphabet ++ upperAlphabet ++ digits
 
 indexOf :: Char -> Alphabet -> Int
-indexOf ch [] = undefined
+indexOf _ch [] = undefined
 indexOf ch (x : xs) = if x == ch then 0 else 1 + indexOf ch xs
+
+upperRot :: Int -> Char -> Char
+upperRot n ch = upperAlphabet !! ((indexOf ch upperAlphabet + n) `mod` 26)
+
+lowerRot :: Int -> Char -> Char
+lowerRot n ch = lowerAlphabet !! ((indexOf ch lowerAlphabet + n) `mod` 26)
