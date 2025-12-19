@@ -27,8 +27,21 @@ indexOf :: Char -> Alphabet -> Int
 indexOf _ch [] = undefined
 indexOf ch (x : xs) = if x == ch then 0 else 1 + indexOf ch xs
 
+alphabetRot :: Alphabet -> Int -> Char -> Char
+alphabetRot alphabet n ch = alphabet !! ((indexOf ch alphabet + n) `mod` length alphabet)
+
 upperRot :: Int -> Char -> Char
-upperRot n ch = upperAlphabet !! ((indexOf ch upperAlphabet + n) `mod` 26)
+upperRot n ch = alphabetRot upperAlphabet n ch
 
 lowerRot :: Int -> Char -> Char
-lowerRot n ch = lowerAlphabet !! ((indexOf ch lowerAlphabet + n) `mod` 26)
+lowerRot n ch = alphabetRot lowerAlphabet n ch
+
+rotChar :: Int -> Char -> Char
+rotChar n ch
+    | isLower ch = lowerRot n ch
+    | isUpper ch = upperRot n ch
+    | otherwise = ch
+
+caesar :: Int -> String -> String
+caesar n [] = []
+caesar n (x : xs) = rotChar n x : caesar n xs
