@@ -68,3 +68,22 @@ myZip' :: [a] -> [b] -> [(a, b)]
 myZip' = myZipWith (,)
 
 
+myMapM :: (a -> IO b) -> [a] -> IO [b]
+myMapM _f [] = do
+    return []
+
+myMapM f (x : xs) = do
+    result <- f x
+    results <- myMapM f xs
+    return $ result : results
+
+myMapM_ :: (a -> IO b) -> [a] -> IO ()
+myMapM_ f xs = do
+    _ <- myMapM f xs
+    return ()
+
+
+
+
+
+
