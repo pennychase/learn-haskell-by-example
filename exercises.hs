@@ -82,6 +82,20 @@ myMapM_ f xs = do
     _ <- myMapM f xs
     return ()
 
+-- Chapter 5
+
+member :: Eq a => a -> [(a, b)] -> Bool
+member x map =
+    case lookup x map of
+        Nothing -> False
+        Just _ -> True
+
+alter :: Eq k => (Maybe v -> Maybe v) -> k -> [(k, v)] -> [(k, v)]
+alter f key [] = maybe [] (\value  -> [(key, value)]) (f Nothing)
+alter f key ((key', value') : xs)
+    | key == key' = maybe xs (\value -> (key, value) : xs ) (f (Just value'))
+    | otherwise = (key', value') : alter f key xs
+
 
 
 
