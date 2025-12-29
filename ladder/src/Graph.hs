@@ -38,7 +38,7 @@ buildDiGraph :: (Eq a) => [(a, [a])] -> DiGraph a
 buildDiGraph adjacencyList = foldr addAdjacent empty adjacencyList
     where
         addAdjacent :: (Eq a) => (a, [a]) -> DiGraph a -> DiGraph a
-        addAdjacent (node, edges) graph = addEdges (zip (cycle [node]) edges) graph
+        addAdjacent (node, edges) graph = M.insert node edges graph
 
 children :: (Eq a) => a -> DiGraph a -> [a]
 children = M.findWithDefault []
