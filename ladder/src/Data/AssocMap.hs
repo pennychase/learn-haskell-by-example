@@ -2,17 +2,18 @@ module Data.AssocMap
     ( AssocMap,
       empty,
       member,
+      alter,
       lookup,
       findWithDefault,
-      alter,
       delete,
       insert
     )
     where
 
 import Prelude hiding (lookup)
+import Data.Maybe (fromMaybe)
 
-newtype AssocMap k v = AssocMap [(k, v)] 
+newtype AssocMap k v = AssocMap [(k, v)]
     deriving (Show)
 
 empty :: AssocMap k v
@@ -59,7 +60,5 @@ lookup key (AssocMap xs) = lookup' key xs
 
 findWithDefault :: (Eq k) => v -> k -> AssocMap k v -> v
 findWithDefault defaultValue key map =
-    case lookup key map of
-        Nothing -> defaultValue
-        Just value -> value
+    fromMaybe defaultValue (lookup key map)
 
