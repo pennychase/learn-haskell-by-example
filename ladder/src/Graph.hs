@@ -1,6 +1,22 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Graph where
+module Graph 
+  ( DiGraph,
+    empty,
+    hasNode,
+    addNode,
+    addEdge,
+    addEdges,
+    buildDiGraph,
+    children,
+    deleteNode,
+    deleteNodes,
+    deleteEdge,
+    SearchState,
+    SearchResult (..),
+    bfsSearch,
+  )
+where
 
 import qualified Data.AssocMap as M
 import qualified Data.List as L
@@ -77,7 +93,7 @@ bfsSearch graph start end
         bfsSearch' (frontier, g, preds) =
             let
                 g' = deleteNodes frontier g
-                ch = L.map (\n -> (n, L.filter (`M.member` g) (children n g))) frontier
+                ch = L.map (\n -> (n, L.filter (`M.member` g') (children n g))) frontier
                 frontier' = L.concatMap snd ch
                 preds' = addMultiplePredecessors ch preds
             in if end `L.elem` frontier'
