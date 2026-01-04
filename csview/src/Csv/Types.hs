@@ -21,6 +21,12 @@ data Csv = Csv
   }
   deriving (Show)
 
+instance Semigroup Csv where
+  (<>) = appendCsv
+
+instance Monoid Csv where
+  mempty = Csv {csvHeader = Nothing, csvColumns = []}
+
 mkCsv :: Maybe [T.Text] -> [Column] -> Either String Csv
 mkCsv mHeader columns
   | not headerSizeCorrect =
