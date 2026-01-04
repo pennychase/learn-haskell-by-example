@@ -19,7 +19,7 @@ common warnings
                         NamedFieldPuns
 library
     import:           warnings
-    exposed-modules:  MyLib
+    exposed-modules:  Csv
                       Csv.Types
                       Data.Sliceable
     -- other-modules:
