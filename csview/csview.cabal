@@ -17,12 +17,11 @@ common warnings
     default-extensions: OverloadedStrings
                         RecordWildCards
                         NamedFieldPuns
-
-
 library
     import:           warnings
     exposed-modules:  MyLib
                       Csv.Types
+                      Data.Sliceable
     -- other-modules:
     -- other-extensions:
     build-depends:    base ^>=4.18.3.0,

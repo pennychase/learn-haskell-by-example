@@ -5,6 +5,8 @@ import qualified Data.List as L
 import qualified Data.Maybe as M
 import qualified Data.Text as T
 
+import Data.Sliceable(Sliceable(..))
+
 data DataField 
   = IntValue Int 
   | TextValue T.Text 
@@ -24,6 +26,15 @@ instance Semigroup Csv where
 
 instance Monoid Csv where
   mempty = Csv {csvHeader = Nothing, csvColumns = []}
+
+instance Sliceable Csv where
+  slicePartition idx1 idx2 Csv {..} =
+    let (headerHd, headerSpl, headerTl) = slicePartition idx1 idx2 csvHeader
+        (columnHd, columnSpl, columnTl) = slicePartition idx1 idx2 csvColumns
+    in ( Csv { csvHeader = headerHd, csvColumns = columnHd},
+         Csv { csvHeader = headerSpl, csvColumns = columnSpl},
+         Csv { csvHeader = headerTl, csvColumns = columnTl}
+        )
 
 mkCsv :: Maybe [T.Text] -> [Column] -> Either String Csv
 mkCsv mHeader columns
