@@ -14,10 +14,14 @@ extra-doc-files:    CHANGELOG.md
 
 common warnings
     ghc-options: -Wall
+    default-extensions: OverloadedStrings
+                        RecordWildCards
+                        NamedFieldPuns
+
 
 library
     import:           warnings
-    exposed-modules:  MyLib,
+    exposed-modules:  MyLib
                       Csv.Types
     -- other-modules:
     -- other-extensions:

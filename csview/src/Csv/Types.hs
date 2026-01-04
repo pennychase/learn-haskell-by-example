@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Csv.Types where
 
 import qualified Data.Either as E
