@@ -20,6 +20,7 @@ common warnings
 library
     import:           warnings
     exposed-modules:  Csv
+                      Csv.Parsing
                       Csv.Types
                       Data.Sliceable
     -- other-modules:

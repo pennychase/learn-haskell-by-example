@@ -36,6 +36,17 @@ instance Sliceable Csv where
          Csv { csvHeader = headerTl, csvColumns = columnTl}
         )
 
+textToDataField :: T.Text -> DataField
+textToDataField "" = NullValue
+textToDataField raw =
+  let mIntVale = readMaybe (T.umpack raw)
+  in maybe (TextValue raw) IntValue mIntValue
+
+dataFieldToText :: DataField -> T.Text
+dataFieldToText NullValue = ""
+dataFieldToText (IntValue i) = T.pack $ show i
+dataFieldToText (TextValue t) = t 
+
 mkCsv :: Maybe [T.Text] -> [Column] -> Either String Csv
 mkCsv mHeader columns
   | not headerSizeCorrect =
