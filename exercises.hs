@@ -1,4 +1,5 @@
 import Data.Maybe
+import Data.List
 
 -- Chapter 2
 
@@ -95,6 +96,48 @@ alter f key [] = maybe [] (\value  -> [(key, value)]) (f Nothing)
 alter f key ((key', value') : xs)
     | key == key' = maybe xs (\value -> (key, value) : xs ) (f (Just value'))
     | otherwise = (key', value') : alter f key xs
+
+-- Chapter 8
+
+-- implement Foldable convenience functions using foldr
+
+myLength :: [a] -> Int
+myLength = foldr (\_ acc -> acc + 1) 0
+
+myElem :: (Eq a) => a -> [a] -> Bool
+myElem y = foldr (\x acc -> (x == y) || acc) False
+
+mySum :: (Num a) => [a] -> a
+mySum = foldr (+) 0
+
+myProduct :: (Num a) => [a] -> a
+myProduct = foldr (*) 1
+
+myMinimum :: (Ord a, Bounded a) => [a] -> a
+myMinimum = foldr (\n acc -> min n acc) maxBound
+
+myMaximum :: (Ord a, Bounded a) => [a] -> a
+myMaximum = foldr (\n acc -> max n acc) minBound
+
+-- Foldable instance for Tree
+
+-- Minimum definition is foldMap | foldr
+-- We'll implment foldMap
+-- foldMap :: Monoid m => (a -> m) -> t a -> m
+
+data Tree a = Leaf a | Node (Tree a) a (Tree a)
+    deriving (Show)
+
+instance Foldable Tree where
+    -- foldMap :: Monoid m => (a -> m) -> Tree a -> m
+    -- foldMap f (Leaf a) = f a
+    -- foldMap f (Node l a r) = foldMap f l <> f a <> foldMap f r
+    foldr :: (a -> b -> b) -> b -> Tree a -> b
+    foldr f acc (Leaf a)  = f a acc
+    foldr f acc (Node l a r) = foldr f (f a (foldr f acc r)) l
+
+inOrder :: Tree a -> [a]
+inOrder = foldr (:) []
 
 
 
