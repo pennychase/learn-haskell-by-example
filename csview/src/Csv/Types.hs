@@ -4,6 +4,7 @@ import qualified Data.Either as E
 import qualified Data.List as L
 import qualified Data.Maybe as M
 import qualified Data.Text as T
+import Text.Read(readMaybe)
 
 import Data.Sliceable(Sliceable(..))
 
@@ -39,7 +40,7 @@ instance Sliceable Csv where
 textToDataField :: T.Text -> DataField
 textToDataField "" = NullValue
 textToDataField raw =
-  let mIntVale = readMaybe (T.umpack raw)
+  let mIntValue = readMaybe (T.unpack raw)
   in maybe (TextValue raw) IntValue mIntValue
 
 dataFieldToText :: DataField -> T.Text
