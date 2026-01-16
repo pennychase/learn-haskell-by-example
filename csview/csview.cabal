@@ -21,6 +21,7 @@ library
     import:           warnings
     exposed-modules:  Csv
                       Csv.Parsing
+                      Csv.Print
                       Csv.Types
                       Data.Sliceable
     -- other-modules:

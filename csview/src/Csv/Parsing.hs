@@ -1,4 +1,14 @@
-module Csv.Parsing where
+module Csv.Parsing
+    ( Separators (..),
+      HeaderOption (..),
+      CsvParseOptions (..),
+      defaultSeparators,
+      defaultOptions,
+      parseCsv,
+      parseWithHeader,
+      parseWithoutHeader
+    )
+where
 
 import qualified Data.Either as E
 import qualified Data.List as L
@@ -27,7 +37,7 @@ defaultSeparators =
     Separators
         { sepLineSeparator = '\n',
           sepFieldSeparator = ','
-    }
+        }
 
 defaultOptions :: CsvParseOptions
 defaultOptions =
