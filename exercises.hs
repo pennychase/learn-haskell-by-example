@@ -121,17 +121,18 @@ myMaximum = foldr (\n acc -> max n acc) minBound
 
 -- Foldable instance for Tree
 
--- Minimum definition is foldMap | foldr
--- We'll implment foldMap
--- foldMap :: Monoid m => (a -> m) -> t a -> m
+-- Minimum definition for a foldable instance is foldMap | foldr
+-- We'll implement both for practice. They walk the Tree in
+-- in order.
 
 data Tree a = Leaf a | Node (Tree a) a (Tree a)
     deriving (Show)
 
 instance Foldable Tree where
-    -- foldMap :: Monoid m => (a -> m) -> Tree a -> m
-    -- foldMap f (Leaf a) = f a
-    -- foldMap f (Node l a r) = foldMap f l <> f a <> foldMap f r
+    foldMap :: Monoid m => (a -> m) -> Tree a -> m
+    foldMap f (Leaf a) = f a
+    foldMap f (Node l a r) = foldMap f l <> f a <> foldMap f r
+
     foldr :: (a -> b -> b) -> b -> Tree a -> b
     foldr f acc (Leaf a)  = f a acc
     foldr f acc (Node l a r) = foldr f (f a (foldr f acc r)) l
