@@ -1,4 +1,15 @@
-module Csv.Types where
+module Csv.Types
+  ( Csv(..),
+    DataField(..),
+    textToDataField,
+    dataFieldToText,
+    mkCsv,
+    unsafeMkCsv,
+    numberOfColumns,
+    numberOfRows,
+    appendCsv
+  )
+where
 
 import qualified Data.Either as E
 import qualified Data.List as L
