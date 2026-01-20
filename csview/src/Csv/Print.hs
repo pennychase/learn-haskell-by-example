@@ -2,6 +2,7 @@ module Csv.Print
     ( PrettyCsv (..),
       toFileContent,
       writeCsv,
+      printCsv,
       fromCsv,
       withSummaries,
       unsafeWithSummaries,
@@ -32,6 +33,9 @@ toFileContent Csv {..} =
 
 writeCsv :: FilePath -> Csv -> IO ()
 writeCsv path = TIO.writeFile path . T.intercalate "\n" . toFileContent
+
+printCsv :: Csv -> IO ()
+printCsv = mapM_ TIO.putStrLn . toFileContent
 
 fromCsv :: Csv -> PrettyCsv
 fromCsv Csv {..} =
