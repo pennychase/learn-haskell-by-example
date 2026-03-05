@@ -49,3 +49,44 @@ randomListIO' = applyAtomicGen randomList' globalStdGen
 applyGlobalStdGen :: (StdGen -> (a, StdGen)) -> IO a
 applyGlobalStdGen f = applyAtomicGen f globalStdGen
 
+-- Property Tests
+
+-- Specific test for sorting
+propertyTestSorts :: ([Int] -> [Int]) -> Int -> IO ()
+propertyTestSorts f n 
+    | n <= 0 = putStrLn "Tests successful"
+    | otherwise = do
+        xs <- applyGlobalStdGen randomList'
+        if f `sorts` xs
+            then propertyTestSorts f $ n - 1
+            else putStrLn $ "Test failed on: " <> show xs
+
+-- Generic property test IO action
+propertyTest :: Show a => (a -> b) -> (b -> Bool) -> IO a -> Int -> IO ()
+propertyTest fun predicate random n
+    | n <= 0 = putStrLn "Tests successful"
+    | otherwise = do
+        testCase <- random
+        if predicate $ fun testCase
+            then propertyTest fun predicate random $ n - 1
+            else putStrLn $ "Test failed on: " <> show testCase
+
+-- Random value generators
+
+newtype RandomIO a = RandomIO {runRandomIO :: IO a}
+
+one :: Random a => RandomIO a
+one = RandomIO $ applyGlobalStdGen random
+
+some ::Random a => RandomIO [a]
+some = RandomIO $ do
+    n <- applyGlobalStdGen $ uniformR (0, 100)
+    replicateIO n $ runRandomIO one
+
+replicateIO :: Int -> IO a -> IO [a]
+replicateIO n act
+    | n <= 0 = return []
+    | otherwise = do
+        x <- act
+        xs <- replicateIO (n - 1) act
+        return $ x : xs
