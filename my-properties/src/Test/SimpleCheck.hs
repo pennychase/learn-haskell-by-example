@@ -2,6 +2,9 @@ module Test.SimpleCheck where
 
 import System.Random
 import System.Random.Stateful
+import Data.Char
+import Data.Map (Map, (!))
+import qualified Data.Map as M
 
 
 sorted :: Ord a => [a] -> Bool
@@ -62,18 +65,23 @@ propertyTestSorts f n
             else putStrLn $ "Test failed on: " <> show xs
 
 -- Generic property test IO action
-propertyTest :: Show a => (a -> b) -> (b -> Bool) -> IO a -> Int -> IO ()
-propertyTest fun predicate random n
+propertyTest :: Show a => (a -> Bool) -> RandomIO a -> Int -> IO ()
+propertyTest predicate random n
     | n <= 0 = putStrLn "Tests successful"
     | otherwise = do
-        testCase <- random
-        if predicate $ fun testCase
-            then propertyTest fun predicate random $ n - 1
+        testCase <- runRandomIO random
+        if predicate testCase
+            then propertyTest predicate random $ n - 1
             else putStrLn $ "Test failed on: " <> show testCase
 
 -- Random value generators
 
 newtype RandomIO a = RandomIO {runRandomIO :: IO a}
+
+instance Functor RandomIO where
+    fmap f rand = RandomIO $ do 
+        val <- runRandomIO rand
+        return $ f val
 
 one :: Random a => RandomIO a
 one = RandomIO $ applyGlobalStdGen random
@@ -83,6 +91,11 @@ some = RandomIO $ do
     n <- applyGlobalStdGen $ uniformR (0, 100)
     replicateIO n $ runRandomIO one
 
+manyOf :: RandomIO a -> RandomIO [a]
+manyOf rio = RandomIO $ do
+    n <- applyGlobalStdGen $ uniformR (0, 100)
+    replicateIO n (runRandomIO rio)
+
 replicateIO :: Int -> IO a -> IO [a]
 replicateIO n act
     | n <= 0 = return []
@@ -90,3 +103,77 @@ replicateIO n act
         x <- act
         xs <- replicateIO (n - 1) act
         return $ x : xs
+
+suchThat :: RandomIO a -> (a -> Bool) -> RandomIO a
+suchThat rand pred = RandomIO $ do
+    val <- runRandomIO rand
+    if pred val
+        then return val
+        else runRandomIO $ suchThat rand pred
+
+-- Generators
+nonNegative :: (Num a, Ord a, Random a) => RandomIO a
+nonNegative = one `suchThat` (> 0)
+
+nonEmpty :: Random a => RandomIO [a]
+nonEmpty = some `suchThat` (not . null)
+
+-- ASCII chars and strings
+
+asciiChar :: RandomIO Char
+asciiChar = one `suchThat` (\c -> isAscii c && not (isControl c))
+
+letterChar :: RandomIO Char
+letterChar = asciiChar `suchThat` isLetter
+
+asciiString :: RandomIO String
+asciiString = manyOf asciiChar
+
+letterString :: RandomIO String
+letterString = manyOf letterChar
+
+-- More efficient character and string generators
+
+-- Use a list
+elements :: [a] -> RandomIO a
+elements [] = error "elements cannot work with an empty list"
+elements xs = RandomIO $ do
+  i <- applyGlobalStdGen $ uniformR (0, length xs - 1)
+  return $ xs !! i
+
+asciiChar' :: RandomIO Char
+asciiChar' = elements ['\x20' .. '\x7e']
+
+letterChar' :: RandomIO Char
+letterChar' = elements "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+asciiString' :: RandomIO String
+asciiString' = manyOf asciiChar'
+
+letterString' :: RandomIO String
+letterString' = manyOf letterChar'
+
+-- Use a map
+
+elements' :: Map Int a -> RandomIO a
+elements' m = RandomIO $ do
+  i <- applyGlobalStdGen $ uniformR (0, M.size(m) - 1)
+  return $ m ! i
+
+asciiCharMap :: Map Int Char
+asciiCharMap = M.fromList $ zip [0..] ['\x20' .. '\x7e']
+
+asciiChar'' :: RandomIO Char
+asciiChar'' = elements' asciiCharMap
+
+asciiString'' :: RandomIO String
+asciiString'' = manyOf asciiChar''
+
+letterMap :: Map Int Char
+letterMap = M.fromList $ zip [0..] "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+letterChar'' :: RandomIO Char
+letterChar'' = elements' letterMap
+
+letterString'' :: RandomIO String
+letterString'' = manyOf letterChar''
