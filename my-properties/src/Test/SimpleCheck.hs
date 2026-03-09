@@ -111,6 +111,27 @@ suchThat rand pred = RandomIO $ do
         then return val
         else runRandomIO $ suchThat rand pred
 
+choose :: (Random a, UniformRange a) => (a, a) -> RandomIO a
+choose (x, y) = RandomIO $ applyGlobalStdGen $ uniformR (x, y)
+
+-- Example: runRandomIO $ oneof [one, one] :: IO Bool
+oneof :: [RandomIO a] -> RandomIO a
+oneof rs = RandomIO $ do
+  rio <- runRandomIO $ elements rs
+  runRandomIO rio
+
+vectorOf :: Int -> RandomIO a -> RandomIO [a]
+vectorOf n rio = RandomIO $ replicateIO n (runRandomIO rio)
+
+listOf :: RandomIO a -> RandomIO [a]
+listOf rio = RandomIO $ do
+    n <- applyGlobalStdGen $ uniformR (0, 1000)
+    runRandomIO $ vectorOf n rio
+
+listOf1 :: RandomIO a -> RandomIO [a]
+listOf1 rio = listOf rio `suchThat` (not . null)
+
+
 -- Generators
 nonNegative :: (Num a, Ord a, Random a) => RandomIO a
 nonNegative = one `suchThat` (> 0)
@@ -177,3 +198,5 @@ letterChar'' = elements' letterMap
 
 letterString'' :: RandomIO String
 letterString'' = manyOf letterChar''
+
+
