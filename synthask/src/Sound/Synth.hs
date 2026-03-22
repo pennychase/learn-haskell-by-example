@@ -4,7 +4,9 @@ module Sound.Synth
       saw,
       tri,
       silence,
-      tone
+      tone,
+      ADSR (..),
+      adsr
     ) 
 where
 
@@ -52,3 +54,40 @@ tone wave freq t = map wave periodValues
         periodValues =
             map (\x -> fromIntegral (x `mod` numSamples) / fromIntegral numSamples)
                 [0 .. samplesPerSecond t]
+
+
+data ADSR = ADSR
+    { attack :: Seconds,
+      decay :: Seconds,
+      systain :: Double,
+      release :: Seconds    
+    }
+    deriving (Show)
+
+adsr :: ADSR -> Signal -> Signal
+adsr (ADSR a d s r) signal =
+    zipWith3 (\adsCurve rCurve sample ->
+                adsCurve * rCurve * sample)
+             (att ++ dec ++ sus)
+             rel
+             signal
+    where
+        attackSamples = fromIntegral $ samplesPerSecond a
+        decaySamples = fromIntegral $ samplesPerSecond d
+        releaseSamples = fromIntegral $ samplesPerSecond r
+
+        att = map (/ attackSamples) [0.0 .. attackSamples]
+
+        dec = reverse $ map (\x -> ((x / decaySamples) * (1 - s)) + s)
+                            [0.0 .. decaySamples - 1]
+
+        sus = repeat s
+
+        rel = reverse $ take (length signal)
+                             (map (/ releaseSamples)
+                                  [0.0 .. releaseSamples] ++ repeat 1.0)
+
+
+
+
+
