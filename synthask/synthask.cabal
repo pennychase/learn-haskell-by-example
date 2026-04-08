@@ -19,6 +19,7 @@ common warnings
 library
     import:           warnings
     exposed-modules:  Composition.Performance
+                      Composition.Pitch
                       Sound.Synth
                       Util.Types
     other-modules:
@@ -56,4 +57,7 @@ test-suite synthask-test
     main-is:          Main.hs
     build-depends:
         base ^>=4.18.3.0,
+        HCodecs,
+        QuickCheck >=2.0,
+        array,
         synthask
