@@ -18,7 +18,8 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  Composition.Performance
+    exposed-modules:  Composition.Notelength
+                      Composition.Performance
                       Composition.Pitch
                       Sound.Synth
                       Util.Types
