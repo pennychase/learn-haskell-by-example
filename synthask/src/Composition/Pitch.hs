@@ -1,8 +1,11 @@
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module Composition.Pitch
   ( 
     Pitchable (..),
+    Pitch (..),
     Semitone,
     Chromatic (..),
     ChromaticName (..),
@@ -38,6 +41,13 @@ type Semitone = Integer
 
 instance Pitchable Semitone where
   toFrequency semitone = 440 * (2.0 ** (fromInteger semitone / 12))
+
+data Pitch = forall a. (Pitchable a, Show a) => Pitch a
+
+deriving instance Show Pitch
+
+instance Pitchable Pitch where
+  toFrequency (Pitch p) = toFrequency p
 
 -- Chromatic Notes
 
